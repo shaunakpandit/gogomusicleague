@@ -8,7 +8,9 @@ CREATE TABLE competitors (
     id CHAR(32) NOT NULL,
     name VARCHAR(255) NOT NULL,
     PRIMARY KEY (id)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE rounds (
     id CHAR(32) NOT NULL,
@@ -18,7 +20,9 @@ CREATE TABLE rounds (
     playlist_url VARCHAR(1024) NULL,
     PRIMARY KEY (id),
     KEY idx_rounds_created (created)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE submissions (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -41,7 +45,9 @@ CREATE TABLE submissions (
     KEY idx_submissions_round_id (round_id),
     KEY idx_submissions_submitter_id (submitter_id),
     KEY idx_submissions_created (created)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE votes (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -60,4 +66,6 @@ CREATE TABLE votes (
     KEY idx_votes_round_id (round_id),
     KEY idx_votes_voter_id (voter_id),
     KEY idx_votes_created (created)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
