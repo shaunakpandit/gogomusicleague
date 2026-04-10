@@ -27,8 +27,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	fmt.Printf("Competitor found: %+v\n", cmp)
+
+	subs, err := models.SubmissionsByCompetitorID(cmp.ID, db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Competitor submitted: %+v\n", subs)
 }
 
 func initDB() (*sql.DB, error) {
@@ -38,6 +44,7 @@ func initDB() (*sql.DB, error) {
 	cfg.Net = "tcp"
 	cfg.Addr = "192.168.4.28:33061"
 	cfg.DBName = "musicleague"
+	cfg.ParseTime = true
 
 	db, err := sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
