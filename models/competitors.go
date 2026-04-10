@@ -1,4 +1,4 @@
-package competitors
+package models
 
 import (
 	"database/sql"
@@ -10,8 +10,8 @@ type Competitor struct {
 	Name string
 }
 
-// competitorByName queries for the competitor with the specified name
-func competitorByName(name string, db *sql.DB) (Competitor, error) {
+// CompetitorByName queries for the competitor with the specified name
+func CompetitorByName(name string, db *sql.DB) (Competitor, error) {
 	var cmp Competitor
 
 	row := db.QueryRow("SELECT * FROM competitors WHERE name = ?", name)
