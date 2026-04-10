@@ -13,11 +13,6 @@ import (
 
 var db *sql.DB
 
-type Competitor struct {
-	ID   string
-	Name string
-}
-
 type Round struct {
 	ID          string
 	Created     time.Time
@@ -84,18 +79,4 @@ func initDb() {
 		log.Fatal(pingErr)
 	}
 	fmt.Println("Connected!")
-}
-
-// competitorByName queries for the competitor with the specified name
-func competitorByName(name string) (Competitor, error) {
-	var cmp Competitor
-
-	row := db.QueryRow("SELECT * FROM competitors WHERE name = ?", name)
-	if err := row.Scan(&cmp.ID, &cmp.Name); err != nil {
-		if err == sql.ErrNoRows {
-			return cmp, fmt.Errorf("competitorByName %s: no such competitor", name)
-		}
-		return cmp, fmt.Errorf("competitorByName %s: %v", name, err)
-	}
-	return cmp, nil
 }
