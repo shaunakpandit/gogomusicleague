@@ -9,6 +9,7 @@ import (
 	"jssp.io/gogomusicleague/models"
 
 	"github.com/go-sql-driver/mysql"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/joho/godotenv"
 )
 
@@ -23,18 +24,39 @@ func main() {
 	}
 	defer db.Close()
 
+	cmp := getAndPrintCompetitor(db)
+
+	getAndPrintScoresByCompetitor(db, cmp.ID)
+
+}
+
+func getAndPrintCompetitor(db *sql.DB) models.Competitor {
 	cmp, err := models.CompetitorByName("shaunakpandit", db)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Competitor found: %+v\n", cmp)
 
-	subs, err := models.SubmissionsByCompetitorID(cmp.ID, db)
+	t := table.NewWriter()
+	t.AppendHeader(table.Row{"ID", "Name"})
+	t.AppendRow(table.Row{cmp.ID, cmp.Name})
+	fmt.Println(t.Render())
+	return cmp
+}
+
+func getAndPrintScoresByCompetitor(db *sql.DB, id string) []models.PointsPerCompetitor {
+	comps, err := models.PointsAwardedToCompetitorByCompetitor(id, db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Competitor submitted: %+v\n", subs)
+	t := table.NewWriter()
+	t.AppendHeader(table.Row{"VoterId", "VoterName", "PointsAwarded"})
+	for _, c := range comps {
+		t.AppendRow(table.Row{c.VoterId, c.VoterName, c.PointsAwarded})
+
+	}
+	fmt.Println(t.Render())
+	return comps
 }
 
 func initDB() (*sql.DB, error) {
