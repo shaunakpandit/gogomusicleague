@@ -3,7 +3,9 @@ package main
 import (
 	"database/sql"
 	"log"
+	"net/http"
 	"os"
+	"text/template"
 
 	"jssp.io/gogomusicleague/handlers"
 
@@ -16,13 +18,28 @@ func main() {
 		log.Fatal("No .env file found")
 	}
 
+	http.HandleFunc("/userSongs", userSongsHandler)
+
+	log.Println("Server running on http://localhost:8080/search")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func userSongsHandler(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+
 	db, err := initDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	handlers.UserSongsHandler(db)
+	data := handlers.UserSongsHandler(name, db)
+
+	tmpl := template.Must(template.ParseFiles("templates/userSongs.html"))
+	tmplErr := tmpl.Execute(w, data)
+	if tmplErr != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+	}
 }
 
 func initDB() (*sql.DB, error) {

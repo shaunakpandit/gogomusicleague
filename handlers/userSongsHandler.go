@@ -9,14 +9,23 @@ import (
 	"jssp.io/gogomusicleague/models"
 )
 
-func UserSongsHandler(db *sql.DB) {
-	cmp := getAndPrintCompetitor(db)
-
-	getAndPrintScoresByCompetitor(db, cmp.ID)
+type UserSongsData struct {
+	Songs   []models.PointsPerCompetitor
+	Success bool
 }
 
-func getAndPrintCompetitor(db *sql.DB) models.Competitor {
-	cmp, err := models.CompetitorByName("shaunakpandit", db)
+func UserSongsHandler(name string, db *sql.DB) UserSongsData {
+	cmp := getAndPrintCompetitor(db, name)
+	songs := getAndPrintScoresByCompetitor(db, cmp.ID)
+
+	return UserSongsData{
+		Songs:   songs,
+		Success: true,
+	}
+}
+
+func getAndPrintCompetitor(db *sql.DB, name string) models.Competitor {
+	cmp, err := models.CompetitorByName(name, db)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,6 +49,6 @@ func getAndPrintScoresByCompetitor(db *sql.DB, id string) []models.PointsPerComp
 		t.AppendRow(table.Row{c.VoterId, c.VoterName, c.PointsAwarded})
 
 	}
-	fmt.Println(t.Render())
+	// fmt.Println(t.Render())
 	return comps
 }
