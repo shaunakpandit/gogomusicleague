@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check past submissions</title>
+</head>
+<body>
+    <h1>Lookup by name></h1>
+
+    <form method="GET" action="/submissionsByUser">
+        <input type="text" name="name" placeholder="Enter your name" value="{{.Query}}">
+        <button type="submit">Search</button>
+    </form>
+    {{if .Success}}
+        <div>
+            {{.Songs}}
+        </div>
+    {{else}}
+        <div>something is wrong</div>
+    {{end}}
+</body>
+</html>
+
