@@ -3,7 +3,9 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
+	"html/template"
 	"log"
+	"net/http"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"jssp.io/gogomusicleague/models"
@@ -14,13 +16,29 @@ type UserSongsData struct {
 	Success bool
 }
 
-func UserSongsHandler(name string, db *sql.DB) UserSongsData {
+func UserSongsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+	name := r.URL.Query().Get("name")
+	tmpl := template.Must(template.ParseFiles("templates/userSongs.html"))
+
+	if name == "" {
+		tmpl.Execute(w, UserSongsData{
+			nil,
+			true,
+		})
+		return
+	}
+
 	cmp := getAndPrintCompetitor(db, name)
 	songs := getAndPrintScoresByCompetitor(db, cmp.ID)
 
-	return UserSongsData{
+	data := UserSongsData{
 		Songs:   songs,
 		Success: true,
+	}
+
+	tmplErr := tmpl.Execute(w, data)
+	if tmplErr != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
 	}
 }
 

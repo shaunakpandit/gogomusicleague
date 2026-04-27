@@ -18,27 +18,26 @@ func main() {
 		log.Fatal("No .env file found")
 	}
 
-	http.HandleFunc("/userSongs", userSongsHandler)
-
-	log.Println("Server running on http://localhost:8080/search")
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-func userSongsHandler(w http.ResponseWriter, r *http.Request) {
-	name := r.URL.Query().Get("name")
-
 	db, err := initDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	data := handlers.UserSongsHandler(name, db)
+	http.HandleFunc("/userSongs", func(w http.ResponseWriter, r *http.Request) {
+		handlers.UserSongsHandler(w, r, db)
+	})
+	http.HandleFunc("/", homeHandler)
 
-	tmpl := template.Must(template.ParseFiles("templates/userSongs.html"))
-	tmplErr := tmpl.Execute(w, data)
-	if tmplErr != nil {
-		http.Error(w, "Template error", http.StatusInternalServerError)
+	log.Println("Server running on http://localhost:8080/search")
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/home.html"))
+	err := tmpl.Execute(w, nil)
+	if err != nil {
+		http.Error(w, "something went wrong", http.StatusInternalServerError)
 	}
 }
 
