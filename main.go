@@ -24,12 +24,12 @@ func main() {
 	}
 	defer db.Close()
 
+	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/userSongs", func(w http.ResponseWriter, r *http.Request) {
 		handlers.UserSongsHandler(w, r, db)
 	})
-	http.HandleFunc("/", homeHandler)
 
-	log.Println("Server running on http://localhost:8080/search")
+	log.Println("Server running on http://localhost:8080/")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
