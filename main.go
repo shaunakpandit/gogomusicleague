@@ -25,6 +25,9 @@ func main() {
 	defer db.Close()
 
 	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/votesForUser", func(w http.ResponseWriter, r *http.Request) {
+		handlers.VotesForUserHandler(w, r, db)
+	})
 	http.HandleFunc("/userSongs", func(w http.ResponseWriter, r *http.Request) {
 		handlers.UserSongsHandler(w, r, db)
 	})

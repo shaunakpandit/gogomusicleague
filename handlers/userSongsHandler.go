@@ -2,17 +2,15 @@ package handlers
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 
-	"github.com/jedib0t/go-pretty/v6/table"
 	"jssp.io/gogomusicleague/models"
 )
 
 type UserSongsData struct {
-	Songs   []models.PointsPerCompetitor
+	Songs   []models.Submission
 	Success bool
 }
 
@@ -28,8 +26,8 @@ func UserSongsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	cmp := getAndPrintCompetitor(db, name)
-	songs := getAndPrintScoresByCompetitor(db, cmp.ID)
+	cmp := getCompetitor(db, name)
+	songs := getSongsForUser(db, cmp.ID)
 
 	data := UserSongsData{
 		Songs:   songs,
@@ -42,31 +40,20 @@ func UserSongsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 }
 
-func getAndPrintCompetitor(db *sql.DB, name string) models.Competitor {
+func getCompetitor(db *sql.DB, name string) models.Competitor {
 	cmp, err := models.CompetitorByName(name, db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	t := table.NewWriter()
-	t.AppendHeader(table.Row{"ID", "Name"})
-	t.AppendRow(table.Row{cmp.ID, cmp.Name})
-	fmt.Println(t.Render())
 	return cmp
 }
 
-func getAndPrintScoresByCompetitor(db *sql.DB, id string) []models.PointsPerCompetitor {
-	comps, err := models.PointsAwardedToCompetitorByCompetitor(id, db)
+func getSongsForUser(db *sql.DB, id string) []models.Submission {
+	subs, err := models.SubmissionsByCompetitorID(id, db)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	t := table.NewWriter()
-	t.AppendHeader(table.Row{"VoterId", "VoterName", "PointsAwarded"})
-	for _, c := range comps {
-		t.AppendRow(table.Row{c.VoterId, c.VoterName, c.PointsAwarded})
-
-	}
-	// fmt.Println(t.Render())
-	return comps
+	return subs
 }

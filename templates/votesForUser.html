@@ -6,7 +6,7 @@
 <body>
     <h1>Lookup by name</h1>
 
-    <form method="GET" action="/userSongs">
+    <form method="GET" action="/votesForUser">
         <input type="text" name="name" placeholder="Enter your name">
         <button type="submit">Search</button>
     </form>
@@ -16,17 +16,15 @@
             <table border="1" cellpadding="6" cellspacing="0">
                 <thead>
                     <tr>
-                        <th>Song Name</th>
-                        <th>Artists</th>
-                        <th>Round</th>
+                        <th>Voter Name</th>
+                        <th>Points Awarded</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{range .Songs}}
+                    {{range .Votes}}
                     <tr>
-                        <td>{{.Title}}</td>
-                        <td>{{.Artists}}</td>
-                        <td>{{.RoundID}}</td>
+                        <td>{{.VoterName}}</td>
+                        <td>{{.PointsAwarded}}</td>
                     </tr>
                     {{end}}
                 </tbody>
