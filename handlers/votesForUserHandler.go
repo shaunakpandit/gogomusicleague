@@ -2,12 +2,10 @@ package handlers
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 
-	"github.com/jedib0t/go-pretty/v6/table"
 	"jssp.io/gogomusicleague/models"
 )
 
@@ -18,7 +16,7 @@ type VotesForUser struct {
 
 func VotesForUserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	name := r.URL.Query().Get("name")
-	tmpl := template.Must(template.ParseFiles("templates/userSongs.html"))
+	tmpl := template.Must(template.ParseFiles("templates/votesForUser.html"))
 
 	if name == "" {
 		tmpl.Execute(w, VotesForUser{
@@ -29,10 +27,10 @@ func VotesForUserHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	cmp := getAndPrintCompetitor(db, name)
-	songs := getAndPrintScoresByCompetitor(db, cmp.ID)
+	votes := getAndPrintScoresByCompetitor(db, cmp.ID)
 
 	data := VotesForUser{
-		Votes:   songs,
+		Votes:   votes,
 		Success: true,
 	}
 
@@ -48,10 +46,6 @@ func getAndPrintCompetitor(db *sql.DB, name string) models.Competitor {
 		log.Fatal(err)
 	}
 
-	t := table.NewWriter()
-	t.AppendHeader(table.Row{"ID", "Name"})
-	t.AppendRow(table.Row{cmp.ID, cmp.Name})
-	fmt.Println(t.Render())
 	return cmp
 }
 
@@ -61,12 +55,5 @@ func getAndPrintScoresByCompetitor(db *sql.DB, id string) []models.PointsPerComp
 		log.Fatal(err)
 	}
 
-	t := table.NewWriter()
-	t.AppendHeader(table.Row{"VoterId", "VoterName", "PointsAwarded"})
-	for _, c := range comps {
-		t.AppendRow(table.Row{c.VoterId, c.VoterName, c.PointsAwarded})
-
-	}
-	// fmt.Println(t.Render())
 	return comps
 }
