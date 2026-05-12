@@ -32,7 +32,7 @@ func main() {
 		handlers.UserSongsHandler(w, r, db)
 	})
 	http.HandleFunc("/songs", func(w http.ResponseWriter, r *http.Request) {
-		handlers.SearchSongs()
+		handlers.SearchSongs(w, r, db)
 	})
 
 	log.Println("Server running on http://localhost:8080/")
