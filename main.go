@@ -31,6 +31,9 @@ func main() {
 	http.HandleFunc("/userSongs", func(w http.ResponseWriter, r *http.Request) {
 		handlers.UserSongsHandler(w, r, db)
 	})
+	http.HandleFunc("/songs", func(w http.ResponseWriter, r *http.Request) {
+		handlers.SearchSongs()
+	})
 
 	log.Println("Server running on http://localhost:8080/")
 	log.Fatal(http.ListenAndServe(":8080", nil))
