@@ -20,7 +20,6 @@ type SongResponse struct {
 
 func SearchSongs(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	songName := r.URL.Query().Get("name")
-	songName = songName
 
 	rows, err := db.Query(`
 		select 
@@ -31,8 +30,9 @@ func SearchSongs(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		from submissions as s
 		join votes as v on s.spotify_uri = v.spotify_uri and s.round_id = v.round_id
 		join rounds as r on s.round_id = r.id
+		where s.title like ? 
 		group by title, r.name, r.playlist_url
-		`)
+		`, "%"+songName+"%")
 	if err != nil {
 		http.Error(w, "songs failed", 500)
 	}
