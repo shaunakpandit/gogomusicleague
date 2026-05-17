@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check past submissions</title>
+</head>
+<body>
+    <h1>Lookup by name</h1>
+
+    <form method="GET" action="/songs">
+        <input type="text" name="name" placeholder="Enter your name">
+        <button type="submit">Search</button>
+    </form>
+    {{if .Success}}
+        <h2>Results</h2>
+        {{if .Songs}}
+            <table border="1" cellpadding="6" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Song Name</th>
+                        <th>Score</th>
+                        <th>Round</th>
+                        <th>URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Songs}}
+                    <tr>
+                        <td>{{.Name}}</td>
+                        <td>{{.Score}}</td>
+                        <td>{{.RoundName}}</td>
+                        <td>{{.Url}}</td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        {{end}}
+    {{else}}
+        <div>something is wrong</div>
+    {{end}}
+</body>
+</html>
+

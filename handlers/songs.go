@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"html/template"
 	"net/http"
 )
 
@@ -12,13 +13,17 @@ type Song struct {
 	url       string
 }
 
+type SongResponse struct {
+	Songs   []Song
+	Success bool
+}
+
 func SearchSongs(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	w.Header().Set("Content-Type", "application/json")
 
 	songName := r.URL.Query().Get("songName")
 	songName = songName
 
-	var songs []Song
 	rows, err := db.Query(`
 		select 
 			s.title as title, 
@@ -35,6 +40,7 @@ func SearchSongs(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 	defer rows.Close()
 
+	var songs []Song
 	for rows.Next() {
 		var song Song
 		if err := rows.Scan(
@@ -51,4 +57,16 @@ func SearchSongs(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if err := rows.Err(); err != nil {
 		http.Error(w, "songs failed", 500)
 	}
+
+	songResponse := SongResponse{
+		Songs:   songs,
+		Success: true,
+	}
+
+	tmpl := template.Must(template.ParseFiles("templates/songs.html"))
+	tmplErr := tmpl.Execute(w, songResponse)
+	if tmplErr != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+	}
+
 }
