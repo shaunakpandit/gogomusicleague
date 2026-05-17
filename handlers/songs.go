@@ -7,10 +7,10 @@ import (
 )
 
 type Song struct {
-	name      string
-	roundName string
-	score     int
-	url       string
+	Name      string
+	RoundName string
+	Score     int
+	Url       string
 }
 
 type SongResponse struct {
@@ -19,9 +19,7 @@ type SongResponse struct {
 }
 
 func SearchSongs(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	w.Header().Set("Content-Type", "application/json")
-
-	songName := r.URL.Query().Get("songName")
+	songName := r.URL.Query().Get("name")
 	songName = songName
 
 	rows, err := db.Query(`
@@ -44,10 +42,10 @@ func SearchSongs(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	for rows.Next() {
 		var song Song
 		if err := rows.Scan(
-			&song.name,
-			&song.score,
-			&song.roundName,
-			&song.url,
+			&song.Name,
+			&song.Score,
+			&song.RoundName,
+			&song.Url,
 		); err != nil {
 			http.Error(w, "songs failed", 500)
 		}
@@ -63,10 +61,14 @@ func SearchSongs(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		Success: true,
 	}
 
-	tmpl := template.Must(template.ParseFiles("templates/songs.html"))
-	tmplErr := tmpl.Execute(w, songResponse)
-	if tmplErr != nil {
+	tmpl, err := template.ParseFiles("templates/songs.html")
+	if err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
+		return
 	}
 
+	if err := tmpl.Execute(w, songResponse); err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+		return
+	}
 }
