@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"net/http"
 )
 
@@ -52,6 +51,4 @@ func SearchSongs(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if err := rows.Err(); err != nil {
 		http.Error(w, "songs failed", 500)
 	}
-
-	json.NewEncoder(w).Encode(songs)
 }
